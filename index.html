@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحدي تخمين الشخصية - أداة المضيف</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            direction: rtl; /* Right-to-left for Arabic */
+            text-align: right;
+            background-color: #1a202c; /* Dark charcoal background */
+            color: #e2e8f0; /* Light gray text */
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #2d3748; /* Darker blue-gray for container */
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); /* Stronger dark shadow */
+            border: 1px solid #4a5568; /* Subtle darker border */
+        }
+        h1, h2 {
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #f7fafc; /* Lighter text for headings */
+        }
+        label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: #cbd5e0; /* Lighter grey for labels */
+        }
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid #4a5568; /* Darker gray border */
+            border-radius: 0.75rem;
+            box-sizing: border-box;
+            font-size: 1rem;
+            color: #f7fafc; /* Light text for inputs */
+            background-color: #2d3748; /* Dark background for inputs */
+            transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #63b3ed; /* Brighter blue on focus */
+            box-shadow: 0 0 0 4px rgba(99, 179, 237, 0.4); /* Blue glowing shadow */
+        }
+        button {
+            background-image: linear-gradient(to right, #4c51bf, #667eea); /* Gradient blue */
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 1rem; /* Highly rounded */
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15); /* Stronger shadow */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none; /* No default border */
+        }
+        button:hover {
+            background-image: linear-gradient(to right, #434190, #5a67d8); /* Darker gradient on hover */
+            transform: translateY(-3px); /* Lift effect */
+            box-shadow: 0 15px 20px -5px rgba(0, 0, 0, 0.4), 0 6px 10px -3px rgba(0, 0, 0, 0.2); /* Stronger shadow on hover */
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+        .section-header {
+            background-color: #2a4365; /* Darker blue for section headers */
+            padding: 1.25rem 2rem;
+            border-radius: 1.25rem; /* More rounded */
+            margin-bottom: 2rem;
+            font-weight: 700;
+            color: #e2e8f0; /* Light text */
+            border-right: 6px solid #63b3ed; /* Brighter blue accent on right */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+        }
+        .log-entry {
+            background-color: #2d3748; /* Darker background for log entries */
+            padding: 0.8rem 1.2rem;
+            border-radius: 0.75rem;
+            margin-bottom: 0.8rem;
+            color: #a0aec0; /* Lighter gray for log text */
+            font-size: 0.9rem;
+            line-height: 1.5;
+            border: 1px solid #4a5568;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+        }
+        .log-container {
+            max-height: 450px; /* Slightly taller log */
+            overflow-y: auto;
+            border: 2px solid #4a5568;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            background-color: #2d3748;
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.2); /* Inner shadow for depth */
+        }
+        .team-score-item {
+            background-color: #2a4365; /* Darker blue for score items */
+            border: 1px solid #4a5568;
+            padding: 1rem 1.5rem;
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+        }
+        .team-score-item span {
+            color: #f7fafc; /* White text for score items */
+        }
+        .team-score-item input[type="number"] {
+            width: 90px; /* Slightly wider input for score */
+            text-align: center;
+            margin-bottom: 0;
+            padding: 0.6rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            background-color: #4a5568; /* Darker background for score inputs */
+            color: #f7fafc;
+        }
+        .team-score-item button {
+            padding: 0.6rem 1rem;
+            margin-right: 0.5rem;
+            border-radius: 0.75rem;
+            font-size: 0.85rem;
+            box-shadow: none;
+            flex-shrink: 0;
+            background-image: linear-gradient(to right, #4a5568, #718096); /* Darker gray for score buttons */
+            color: #f7fafc;
+        }
+        .team-score-item button:hover {
+             background-image: linear-gradient(to right, #2d3748, #4a5568);
+        }
+        .current-turn-indicator {
+            background-color: #2f855a; /* Dark green for current turn */
+            border-color: #38a169; /* Darker green border */
+            color: #e6fffa; /* Light green text */
+            box-shadow: 0 6px 8px -1px rgba(56, 161, 105, 0.3), 0 3px 5px -1px rgba(56, 161, 105, 0.15);
+        }
+        .timer-display {
+            font-size: 3rem; /* Larger timer font */
+            font-weight: 800; /* Bolder */
+            text-align: center;
+            background-color: #2c7a7b; /* Dark teal */
+            border-radius: 1.25rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #e6fffa; /* Light cyan text */
+            border: 2px solid #38b2ac; /* Teal border */
+            box-shadow: 0 6px 10px -3px rgba(0, 0, 0, 0.2), 0 3px 6px -2px rgba(0, 0, 0, 0.1);
+        }
+        .timer-controls button {
+            background-image: linear-gradient(to right, #4299e1, #63b3ed); /* Brighter blue for timer buttons */
+            padding: 0.8rem 1.2rem;
+            font-size: 1rem;
+        }
+        .timer-controls button:hover {
+            background-image: linear-gradient(to right, #3182ce, #4299e1);
+        }
+
+        /* Specific buttons */
+        #startGameBtn, #confirmCharactersBtn {
+            background-image: linear-gradient(to right, #38a169, #48bb78); /* Darker green gradient */
+            color: #f7fafc;
+        }
+        #startGameBtn:hover, #confirmCharactersBtn:hover {
+            background-image: linear-gradient(to right, #2f855a, #38a169);
+        }
+        #passTurnBtn {
+            background-image: linear-gradient(to right, #4a5568, #718096); /* Darker gray gradient */
+            color: #e2e8f0;
+        }
+        #passTurnBtn:hover {
+            background-image: linear-gradient(to right, #2d3748, #4a5568);
+            color: white;
+        }
+        #winTeam1Btn, #winTeam2Btn, #winTeam1BonusRoundBtn, #winTeam2BonusRoundBtn {
+            background-image: linear-gradient(to right, #805ad5, #a78bfa); /* Purple gradient */
+            color: #f7fafc;
+        }
+        #winTeam1Btn:hover, #winTeam2Btn:hover, #winTeam1BonusRoundBtn:hover, #winTeam2BonusRoundBtn:hover {
+            background-image: linear-gradient(to right, #6b46c1, #805ad5);
+        }
+        #startNewRoundBtn {
+            background-image: linear-gradient(to right, #319795, #38b2ac); /* Teal gradient */
+            color: #f7fafc;
+        }
+        #startNewRoundBtn:hover {
+            background-image: linear-gradient(to right, #2c7a7b, #319795);
+        }
+        #startPlayerJourneyBtn {
+            background-image: linear-gradient(to right, #ed8936, #f6ad55); /* Orange gradient */
+            color: #f7fafc;
+        }
+        #startPlayerJourneyBtn:hover {
+            background-image: linear-gradient(to right, #dd6b20, #ed8936);
+        }
+        #revealCareerBtn {
+            background-image: linear-gradient(to right, #2b6cb0, #4299e1); /* Darker blue */
+            color: #f7fafc;
+        }
+        #revealCareerBtn:hover {
+            background-image: linear-gradient(to right, #2c5282, #2b6cb0);
+        }
+        #revealPlayerNameBtn {
+            background-image: linear-gradient(to right, #e53e3e, #f56565); /* Red */
+            color: #f7fafc;
+        }
+        #revealPlayerNameBtn:hover {
+            background-image: linear-gradient(to right, #c53030, #e53e3e);
+        }
+        #returnToMainGameBtn {
+            background-image: linear-gradient(to right, #4299e1, #63b3ed); /* Blue */
+            color: #f7fafc;
+        }
+        #returnToMainGameBtn:hover {
+            background-image: linear-gradient(to right, #3182ce, #4299e1);
+        }
+        
+        .selected {
+            border-color: #63b3ed !important; /* Brighter blue for selected */
+            box-shadow: 0 0 0 4px rgba(99, 179, 237, 0.4), 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.15) !important;
+        }
+        .character-pair-item-dark { /* Specific style for character pairs in dark mode */
+            background-color: #2a4365; /* Darker blue-gray */
+            border: 1px solid #4a5568;
+            color: #e2e8f0;
+        }
+        .character-pair-item-dark:hover {
+            background-color: #314a6e; /* Slightly lighter on hover */
+        }
+        .character-pair-item-dark .font-bold.text-gray-800 {
+            color: #f7fafc; /* White for pair titles */
+        }
+        .character-pair-item-dark .text-blue-700 {
+            color: #90cdf4; /* Lighter blue for character names */
+        }
+        .character-pair-item-dark .text-gray-600 {
+            color: #a0aec0; /* Lighter gray for hint text */
+        }
+
+        /* Instructions page specific styles */
+        #instructions-page {
+            background-color: #2d3748;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid #4a5568;
+            color: #e2e8f0;
+        }
+        #instructions-page h2 {
+            color: #f7fafc;
+            border-right: 6px solid #63b3ed;
+            background-color: #2a4365;
+        }
+        #instructions-page p, #instructions-page ul {
+            color: #cbd5e0;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+        #instructions-page ul {
+            list-style-type: disc;
+            padding-right: 1.5rem;
+        }
+        #instructions-page ul ul {
+            list-style-type: circle;
+            padding-right: 1.5rem;
+        }
+        #instructions-page strong {
+            color: #f7fafc;
+        }
+        #instructions-page .instruction-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #90cdf4; /* Lighter blue for main instruction titles */
+            text-align: center;
+        }
+
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                margin: 1rem auto;
+                padding: 1rem;
+            }
+            h1 {
+                font-size: 2.5rem;
+                margin-bottom: 1rem;
+            }
+            h2 {
+                font-size: 1.75rem;
+                margin-bottom: 1rem;
+            }
+            .section-header {
+                padding: 1rem 1.25rem;
+                margin-bottom: 1.5rem;
+                font-size: 1.1rem;
+            }
+            button {
+                padding: 0.8rem 1.2rem;
+                font-size: 0.9rem;
+                border-radius: 0.75rem;
+            }
+            .timer-display {
+                font-size: 2rem;
+                padding: 1rem;
+            }
+            .team-score-item {
+                padding: 0.75rem 1rem;
+            }
+            .team-score-item span {
+                font-size: 1rem;
+            }
+        }
+
+    </style>
+</head>
+<body class="bg-gray-100 p-4">
+    <div class="container">
+        <h1 class="text-4xl text-center mb-6">
+            <span class="text-orange-300">𖤍|𝐑𝐄𝐃𝐒𝐖𝐎𝐑𝐃🇦🇷</span> <br> <span class="text-blue-300">تحدي تخمين الشخصية 👤 - أداة المضيف</span>
+        </h1>
+        <hr class="mb-8 border-gray-700">
+
+        <!-- Show Instructions Button -->
+        <button id="showInstructionsBtn" class="w-full mb-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg">
+            عرض تعليمات اللعبة ℹ️
+        </button>
+
+        <!-- Instructions Page (Hidden by default) -->
+        <div id="instructions-page" class="hidden">
+            <h2 class="section-header instruction-title">🎲 تعليمات لعبة تحدي تخمين الشخصية 👤</h2>
+            <p>مرحبًا بكم في "تحدي تخمين الشخصية"! لعبة مليئة بالمتعة والتفكير والاستنتاج، حيث تتنافس الفرق لتخمين الشخصيات السرية لدى الفرق الأخرى.</p>
+            
+            <h2 class="text-2xl mt-8 mb-4 section-header">🎯 هدف اللعبة</h2>
+            <p>الهدف الرئيسي هو أن يقوم كل فريق بتخمين الشخصية السرية للفريق الخصم من خلال طرح أسئلة ذكية تكون إجابتها "نعم" أو "لا" فقط. الفريق الأول الذي يخمن الشخصية الصحيحة يفوز بالجولة.</p>
+            
+            <h2 class="text-2xl mt-8 mb-4 section-header">👥 إعداد اللعبة</h2>
+            <ul>
+                <li><strong>الفرق:</strong> تتكون اللعبة من فريقين يتنافسان ضد بعضهما البعض.</li>
+                <li><strong>المضيف:</strong> هناك مضيف واحد يدير اللعبة، يعرف جميع الشخصيات السرية، ويسجل النقاط، ويدير الأدوار والمؤقت.</li>
+                <li><strong>فئات الشخصيات:</strong> قبل بدء الجولة، يختار المضيف فئة واحدة من الشخصيات للعب بها في الجولة الحالية:
+                    <ul>
+                        <li>شخصيات عربية: تتضمن شخصيات بارزة من العالم العربي في مختلف المجالات.</li>
+                        <li>لاعبو كرة قدم: تتضمن لاعبين كرة قدم مشهورين (حاليين ومعتزلين) من جميع أنحاء العالم.</li>
+                        <li>شخصيات عامة متنوعة: تتضمن شخصيات عالمية معروفة من مختلف المجالات (سياسة، فن، علوم، أعمال، إلخ).</li>
+                    </ul>
+                </li>
+                <li><strong>تعيين الشخصيات السرية:</strong> يقوم المضيف سراً (دون كشفها للاعبين) بتعيين شخصية سرية لكل فريق. كل فريق سيعرف شخصيته السرية فقط، وسيحاول تخمين الشخصية السرية للفريق الآخر. يتم اختيار الشخصيات بحيث تكون متكافئة في مستوى الشهرة والمعرفة.</li>
+            </ul>
+
+            <h2 class="text-2xl mt-8 mb-4 section-header">🔄 سير اللعبة (الجولة الرئيسية)</h2>
+            <ul>
+                <li><strong>بدء الدور:</strong> يحدد المضيف الفريق الذي سيبدأ الدور (غالباً يتم الاختيار عشوائياً في الجولة الأولى).</li>
+                <li><strong>طرح الأسئلة:</strong>
+                    <ul>
+                        <li>الفريق الذي يحين دوره يقوم بطرح سؤال على المضيف. يجب أن تكون الإجابة على السؤال بـ "نعم" أو "لا" فقط.</li>
+                        <li>مثال: "هل الشخصية ذكر؟" ، "هل الشخصية على قيد الحياة؟" ، "هل الشخصية تعمل في مجال الفن؟".</li>
+                        <li>المضيف يجيب على السؤال بناءً على <strong>الشخصية السرية للفريق الآخر</strong>.</li>
+                    </ul>
+                </li>
+                <li><strong>تضييق الخيارات:</strong> يستخدم كل فريق الإجابات التي يحصل عليها لتضييق قائمة الشخصيات المحتملة التي يمكن أن تكون لدى الفريق الخصم.</li>
+                <li><strong>التخمين:</strong> في أي وقت خلال دوره، يمكن للفريق أن يقرر التخمين مباشرة لاسم الشخصية السرية للفريق الخصم.
+                    <ul>
+                        <li><strong>إذا كان التخمين صحيحاً:</strong> يفوز هذا الفريق بالجولة ويحصل على نقطة. تنتهي الجولة الحالية.</li>
+                        <li><strong>إذا كان التخمين خاطئاً:</strong> يخسر الفريق هذه المحاولة، وينتقل الدور إلى الفريق الآخر.</li>
+                    </ul>
+                </li>
+                <li><strong>تمرير الدور:</strong> إذا لم يتمكن الفريق من طرح سؤال أو التخمين، يمكن للمضيف تمرير الدور للفريق الآخر.</li>
+                <li><strong>المؤقت (اختياري):</strong> يمكن للمضيف استخدام مؤقت لتحديد مدة زمنية محددة لكل دور سؤال أو تخمين. هذا المؤقت مستقل عن بدء أو انتهاء الجولات.</li>
+            </ul>
+
+            <h2 class="text-2xl mt-8 mb-4 section-header">⚽ فقرة مسيرة اللاعب (جولة إضافية - لفئة لاعبي كرة القدم فقط)</h2>
+            <ul>
+                <li><strong>متى تبدأ؟:</strong> هذه الفقرة هي جولة إضافية اختيارية يمكن للمضيف تفعيلها <strong>بعد انتهاء جولة رئيسية وفوز أحد الفرق بها، وفقط إذا كانت الفئة المختارة هي "لاعبو كرة القدم"</strong>.</li>
+                <li><strong>هدف الفقرة:</strong> تكسب نقطة إضافية للفريق الذي يخمن لاعب كرة القدم بشكل صحيح من خلال مسيرته المهنية.</li>
+                <li><strong>كيف تعمل؟:</strong>
+                    <ul>
+                        <li>يختار المضيف لاعباً من قائمة مختلفة ومستقلة تماماً عن لاعبي جولة التخمين الرئيسية.</li>
+                        <li>يقوم المضيف بقراءة مسيرة اللاعب المهنية (الأندية التي لعب لها، الإنجازات الرئيسية) على الفرق.</li>
+                        <li>يتنافس الفريقان صوتياً لتخمين اسم هذا اللاعب.</li>
+                        <li><strong>الفريق الأول الذي يخمن الاسم الصحيح:</strong> يعلن المضيف فوزه في هذه الفقرة ويكسب نقطة إضافية.</li>
+                        <li><strong>كشف الاسم:</strong> إذا لم يتمكن أي فريق من التخمين، يمكن للمضيف كشف اسم اللاعب.</li>
+                    </ul>
+                </li>
+                <li><strong>العودة للعبة الرئيسية:</strong> بعد انتهاء فقرة مسيرة اللاعب، يعود المضيف إلى الشاشة الرئيسية لبدء جولة تخمين شخصية جديدة.</li>
+            </ul>
+
+            <h2 class="text-2xl mt-8 mb-4 section-header">🏆 لوحة النقاط</h2>
+            <p>يقوم المضيف بتتبع النقاط لكل فريق، ويتم تحديثها بعد فوز كل فريق بجولة (سواء الجولة الرئيسية أو فقرة مسيرة اللاعب الإضافية). الفريق الذي يحقق أكبر عدد من النقاط في نهاية اللعبة هو الفائز الكلي!</p>
+
+            <h2 class="text-2xl mt-8 mb-4 section-header">🎙️ دور المضيف المحوري</h2>
+            <p>دورك كمضيف حاسم في هذه اللعبة. أنت المسؤول عن:</p>
+            <ul>
+                <li>إعداد اللعبة وتحديد الفرق والفئة.</li>
+                <li>تعيين الشخصيات السرية وإبلاغ الفرق بها سراً.</li>
+                <li>إدارة أدوار اللعب والإجابة على الأسئلة بـ "نعم" أو "لا" بدقة.</li>
+                <li>تحديد صحة التخمينات.</li>
+                <li>تشغيل المؤقت وإيقافه وإعادة تعيينه حسب الحاجة.</li>
+                <li>إدارة فقرة "مسيرة اللاعب" الإضافية.</li>
+                <li>إعلان الفائزين بالجولات وتسجيل النقاط.</li>
+                <li>الحفاظ على سير اللعبة بسلاسة ونزاهة.</li>
+            </ul>
+            <p class="text-center mt-8 font-bold text-lg text-blue-300">نتمنى لكم جولات مليئة بالتحدي والمتعة!</p>
+
+            <button id="hideInstructionsBtn" class="w-full mt-8 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg">
+                عودة ↩️
+            </button>
+        </div>
+
+        <!-- Initial Setup Section -->
+        <div id="setup-section" class="mb-8 p-6 bg-gray-800 rounded-xl shadow-lg border border-gray-700">
+            <h2 class="text-2xl mb-4 section-header">إعداد اللعبة</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="team1NameInput" class="block text-gray-300 font-semibold mb-2">اسم الفريق الأول 🥇:</label>
+                    <input type="text" id="team1NameInput" class="w-full" placeholder="مثال: فريق النجوم">
+                </div>
+                <div>
+                    <label for="team2NameInput" class="block text-gray-300 font-semibold mb-2">اسم الفريق الثاني 🥈:</label>
+                    <input type="text" id="team2NameInput" class="w-full" placeholder="مثال: فريق الأبطال">
+                </div>
+                <div class="md:col-span-2">
+                    <label for="categorySelect" class="block text-gray-300 font-semibold mb-2">اختر فئة الشخصيات 📚:</label>
+                    <select id="categorySelect" class="w-full">
+                        <option value="">-- اختر فئة --</option>
+                        <option value="arabPersonalities">شخصيات عربية</option>
+                        <option value="footballPlayers">لاعبو كرة قدم</option>
+                        <option value="generalPublicFigures">شخصيات عامة متنوعة</option>
+                    </select>
+                </div>
+            </div>
+            <button id="startGameBtn" class="w-full mt-6">
+                بدء الجولة
+            </button>
+        </div>
+
+        <!-- Character Assignment Section (Hidden until game starts) -->
+        <div id="character-assignment-section" class="mb-8 p-6 bg-gray-800 rounded-xl shadow-lg border border-gray-700 hidden">
+            <h2 class="text-2xl mb-4 section-header">تعيين الشخصيات لهذه الجولة (لك وحدك أيها المضيف) 🤫</h2>
+            <p class="text-gray-300 mb-4">اختر زوج الشخصيات التي ستوزعها على الفريقين في هذه الجولة. تذكر أن تخبر كل فريق بشخصيته سراً (مثلاً: عبر رسالة خاصة في الدردشة الصوتية).</p>
+            <div id="characterPairsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <!-- Character pairs will be loaded here dynamically -->
+            </div>
+            <div class="flex flex-col md:flex-row justify-around items-center gap-4 text-xl font-semibold text-gray-200 mb-6 p-4 bg-gray-700 rounded-xl border border-gray-600 shadow-inner">
+                <p>شخصية <span id="assignTeam1Name" class="text-blue-400 font-bold">الفريق الأول</span>: <span id="assignedChar1" class="text-purple-400 font-extrabold">لم تُحدد</span></p>
+                <p>شخصية <span id="assignTeam2Name" class="text-blue-400 font-bold">الفريق الثاني</span>: <span id="assignedChar2" class="text-purple-400 font-extrabold">لم تُحدد</span></p>
+            </div>
+            <button id="confirmCharactersBtn" class="w-full">
+                تأكيد الشخصيات وبدء اللعب! ✨
+            </button>
+        </div>
+
+        <!-- Game Interface Section -->
+        <div id="game-interface" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column: Scoreboard -->
+            <div class="lg:col-span-1">
+                <div class="mb-8 p-6 bg-gray-800 rounded-xl shadow-lg border border-gray-700">
+                    <h2 class="text-2xl mb-4 section-header">لوحة النقاط 🏆</h2>
+                    <div id="teamsScoreBoard" class="space-y-3">
+                        <!-- Team scores will be rendered here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Middle Column: Current Round and Gameplay -->
+            <div class="lg:col-span-1">
+                <div class="mb-8 p-6 bg-gray-800 rounded-xl shadow-lg border border-gray-700">
+                    <h2 class="text-2xl mb-4 section-header">الجولة <span id="currentRoundDisplay">0</span> - تحدي التخمين 🔎</h2>
+                    <p class="text-xl font-bold text-blue-400 mb-4 text-center">الدور الحالي: <span id="currentTurnTeam" class="text-purple-400">الفريق الأول</span></p>
+
+                    <!-- Timer Section -->
+                    <div class="mb-6 p-4 border border-gray-600 rounded-lg bg-teal-800 shadow-md">
+                        <h3 class="text-xl font-semibold mb-3 text-teal-300">المؤقت ⏱️</h3>
+                        <div class="flex items-center justify-around mb-4">
+                            <label for="timerMinutes" class="text-gray-300">دقائق:</label>
+                            <input type="number" id="timerMinutes" value="1" min="0" max="60" class="w-20 text-center rounded-lg border-2 border-teal-600 bg-gray-700 text-white">
+                            <label for="timerSeconds" class="text-gray-300">ثواني:</label>
+                            <input type="number" id="timerSeconds" value="0" min="0" max="59" class="w-20 text-center rounded-lg border-2 border-teal-600 bg-gray-700 text-white">
+                        </div>
+                        <div class="timer-display" id="timerDisplay">01:00</div>
+                        <div class="grid grid-cols-3 gap-2 mt-4 timer-controls">
+                            <button id="startTimerBtn">بدء</button>
+                            <button id="pauseTimerBtn" class="bg-yellow-500 hover:bg-yellow-600">إيقاف مؤقت</button>
+                            <button id="resetTimerBtn" class="bg-red-500 hover:bg-red-600">إعادة تعيين</button>
+                        </div>
+                    </div>
+
+                    <button id="passTurnBtn" class="w-full mt-6">
+                        تمرير الدور 🔄
+                    </button>
+
+                    <!-- Declare Winner Section -->
+                    <div class="mt-8 p-4 border border-gray-600 rounded-lg bg-green-800 shadow-md">
+                        <h3 class="text-xl font-semibold mb-3 text-green-300">الفريق الفائز بالجولة 🎉</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <button id="winTeam1Btn">
+                                <span id="winTeam1NameDisplay">الفريق الأول</span> فاز!
+                            </button>
+                            <button id="winTeam2Btn">
+                                <span id="winTeam2NameDisplay">الفريق الثاني</span> فاز!
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Game Log -->
+            <div class="lg:col-span-1">
+                <div class="p-6 bg-gray-800 rounded-xl shadow-lg border border-gray-700">
+                    <h2 class="text-2xl mb-4 section-header">سجل أحداث الجولة 📜</h2>
+                    <div id="roundLog" class="log-container">
+                        <p class="text-gray-500">سجل أسئلة وأجوبة هذه الجولة يظهر هنا.</p>
+                    </div>
+                </div>
+                <div class="p-6 bg-gray-800 rounded-xl shadow-lg border border-gray-700 mt-4">
+                    <h2 class="text-2xl mb-4 section-header">التحكم بالجولات</h2>
+                    <button id="startNewRoundBtn" class="w-full">
+                        بدء جولة جديدة
+                    </button>
+                    <button id="startPlayerJourneyBtn" class="w-full mt-4">
+                        بدء فقرة مسيرة اللاعب ⚽
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Player Journey Bonus Round Section (Hidden initially) -->
+        <div id="player-journey-section" class="mb-8 p-6 bg-gray-800 rounded-xl shadow-lg border border-gray-700 hidden">
+            <h2 class="text-2xl mb-4 section-header">فقرة مسيرة اللاعب (جولة إضافية) ⚽</h2>
+            <p class="text-gray-300 mb-4">اختر اللاعب الذي ستصف مسيرته للفريقين. الفريق الأول الذي يخمن اللاعب بشكل صحيح يفوز بنقطة إضافية!</p>
+            
+            <div class="mb-4">
+                <label for="playerJourneySelect" class="block text-gray-300 font-semibold mb-2">اختر اللاعب لوصف مسيرته:</label>
+                <select id="playerJourneySelect" class="w-full">
+                    <option value="">-- اختر لاعب --</option>
+                    <!-- Options populated dynamically -->
+                </select>
+            </div>
+
+            <div id="careerPathDisplay" class="p-4 bg-blue-900 border border-blue-700 rounded-lg mb-4 hidden shadow-inner">
+                <p class="font-bold text-blue-200 mb-2">مسيرة اللاعب:</p>
+                <p id="playerCareerText" class="text-gray-100 font-medium leading-loose"></p>
+            </div>
+
+            <button id="revealCareerBtn" class="w-full">
+                عرض مسيرة اللاعب
+            </button>
+
+            <button id="revealPlayerNameBtn" class="w-full mt-6">
+                كشف الاسم (إن لم يتم التخمين)
+            </button>
+
+            <div class="mt-8 p-4 border border-gray-600 rounded-lg bg-green-800 shadow-md">
+                <h3 class="text-xl font-semibold mb-3 text-green-300">الفريق الفائز بفقرة المسيرة 🎉</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <button id="winTeam1BonusRoundBtn">
+                        <span id="winTeam1BonusNameDisplay">الفريق الأول</span> فاز! (+1 نقطة)
+                    </button>
+                    <button id="winTeam2BonusRoundBtn">
+                        <span id="winTeam2BonusNameDisplay">الفريق الثاني</span> فاز! (+1 نقطة)
+                    </button>
+                </div>
+            </div>
+            <button id="returnToMainGameBtn" class="w-full mt-6">
+                العودة للعبة الرئيسية 🔙
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- DOM Elements ---
+        const setupSection = document.getElementById('setup-section');
+        const team1NameInput = document.getElementById('team1NameInput');
+        const team2NameInput = document.getElementById('team2NameInput');
+        const categorySelect = document.getElementById('categorySelect');
+        const startGameBtn = document.getElementById('startGameBtn');
+
+        const characterAssignmentSection = document.getElementById('character-assignment-section');
+        const characterPairsContainer = document.getElementById('characterPairsContainer');
+        const assignTeam1Name = document.getElementById('assignTeam1Name');
+        const assignTeam2Name = document.getElementById('assignTeam2Name');
+        const assignedChar1 = document.getElementById('assignedChar1');
+        const assignedChar2 = document = document.getElementById('assignedChar2');
+        const confirmCharactersBtn = document.getElementById('confirmCharactersBtn');
+
+        const gameInterface = document.getElementById('game-interface');
+        const teamsScoreBoard = document.getElementById('teamsScoreBoard');
+        const currentRoundDisplay = document.getElementById('currentRoundDisplay');
+        const currentTurnTeam = document.getElementById('currentTurnTeam');
+
+        // Timer elements
+        const timerMinutesInput = document.getElementById('timerMinutes');
+        const timerSecondsInput = document.getElementById('timerSeconds');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const startTimerBtn = document.getElementById('startTimerBtn');
+        const pauseTimerBtn = document.getElementById('pauseTimerBtn');
+        const resetTimerBtn = document.getElementById('resetTimerBtn');
+
+        const passTurnBtn = document.getElementById('passTurnBtn');
+
+        // Winner buttons (main game)
+        const winTeam1Btn = document.getElementById('winTeam1Btn');
+        const winTeam2Btn = document.getElementById('winTeam2Btn');
+        const winTeam1NameDisplay = document.getElementById('winTeam1NameDisplay');
+        const winTeam2NameDisplay = document.getElementById('winTeam2NameDisplay');
+
+        const roundLogDiv = document.getElementById('roundLog');
+        const startNewRoundBtn = document.getElementById('startNewRoundBtn');
+        const startPlayerJourneyBtn = document.getElementById('startPlayerJourneyBtn'); // New button for bonus round
+
+        // Player Journey Bonus Round Section elements
+        const playerJourneySection = document.getElementById('player-journey-section');
+        const playerJourneySelect = document.getElementById('playerJourneySelect');
+        const careerPathDisplay = document.getElementById('careerPathDisplay');
+        const playerCareerText = document.getElementById('playerCareerText');
+        const revealCareerBtn = document.getElementById('revealCareerBtn');
+        const revealPlayerNameBtn = document.getElementById('revealPlayerNameBtn');
+        const winTeam1BonusRoundBtn = document.getElementById('winTeam1BonusRoundBtn');
+        const winTeam2BonusRoundBtn = document.getElementById('winTeam2BonusRoundBtn');
+        const winTeam1BonusNameDisplay = document.getElementById('winTeam1BonusNameDisplay');
+        const winTeam2BonusNameDisplay = document.getElementById('winTeam2BonusNameDisplay');
+        const returnToMainGameBtn = document.getElementById('returnToMainGameBtn');
+
+        // Instructions page elements
+        const showInstructionsBtn = document.getElementById('showInstructionsBtn');
+        const instructionsPage = document.getElementById('instructions-page');
+        const hideInstructionsBtn = document.getElementById('hideInstructionsBtn');
+
+        // --- Timer Variables ---
+        let timerInterval;
+        let timeRemaining = 0; // in seconds
+        let isTimerRunning = false;
+
+        // --- Game Data: Balanced Character Pairs (for main game) ---
+        const balancedCharacterPairs = {
+            "arabPersonalities": [
+                { id: "ap1", player1: { name: "نجيب محفوظ" }, player2: { name: "طه حسين" }, hint: "أديبان مصريان عملاقان، أحدهما حائز على نوبل." },
+                { id: "ap2", player1: { name: "أم كلثوم" }, player2: { name: "فيروز" }, hint: "عملاقتي الطرب العربي، من مصر ولبنان." },
+                { id: "ap3", player1: { name: "عادل إمام" }, player2: { name: "يوسف وهبي" }, hint: "زعيم الكوميديا المصرية، ورائد المسرح والسينما." },
+                { id: "ap4", player1: { name: "جمال عبد الناصر" }, player2: { name: "الملك فيصل بن عبد العزيز" }, hint: "زعيمان عربيان تاريخيان لهما تأثير كبير." },
+                { id: "ap5", player1: { name: "أحمد زويل" }, player2: { name: "مجدي يعقوب" }, hint: "عالمان مصريان، أحدهما حائز على نوبل في الكيمياء والآخر جراح قلب عالمي." },
+                { id: "ap6", player1: { name: "محمود درويش" }, player2: { name: "نزار قباني" }, hint: "شاعران عربيان من فلسطين وسوريا، لهما قصائد خالدة." },
+                { id: "ap7", player1: { name: "عبد الحليم حافظ" }, player2: { name: "وديع الصافي" }, hint: "عندليبان من الزمن الجميل، من مصر ولبنان." },
+                { id: "ap8", player1: { name: "محمد صلاح" }, player2: { name: "رياض محرز" }, hint: "نجمان عربيان لكرة القدم يتألقان في أوروبا." },
+                { id: "ap9", player1: { name: "أحمد شوقي" }, player2: { name: "حافظ إبراهيم" }, hint: "أميرا الشعر في العصر الحديث." },
+                { id: "ap10", player1: { name: "أحمد الشقيري" }, player2: { name: "طارق السويدان" }, hint: "داعيان ومفكران إسلاميان مؤثران." },
+                { id: "ap11", player1: { name: "صلاح الدين الأيوبي" }, player2: { name: "عمر المختار" }, hint: "قائدان تاريخيان رمزان للمقاومة العربية." },
+                { id: "ap12", player1: { name: "فريد الأطرش" }, player2: { name: "محمد عبد الوهاب" }, hint: "موسيقاران ومطربان لهما تأثير كبير على الموسيقى العربية." },
+                { id: "ap13", player1: { name: "شادية" }, player2: { name: "صباح" }, hint: "فنانتان متعددتا المواهب من مصر ولبنان." },
+                { id: "ap14", player1: { name: "غازي القصيبي" }, player2: { name: "عبد الرحمن منيف" }, hint: "أديبان سعوديان، أحدهما دبلوماسي والآخر صاحب ثلاثية المدن." },
+                { id: "ap15", player1: { name: "الإمام الشافعي" }, player2: { name: "الإمام مالك" }, hint: "اثنان من الأئمة الأربعة الكبار في الفقه الإسلامي." },
+                { id: "ap16", player1: { name: "عبد المجيد عبد الله" }, player2: { name: "راشد الماجد" }, hint: "نجمان خليجيان في الغناء." },
+                { id: "ap17", player1: { name: "مصطفى محمود" }, player2: { name: "أنيس منصور" }, hint: "مفكران مصريان لهما كتابات شهيرة في الفلسفة والأدب." },
+                { id: "ap18", player1: { name: "إسماعيل ياسين" }, player2: { name: "فؤاد المهندس" }, hint: "عملاقان في الكوميديا المصرية." },
+                { id: "ap19", player1: { name: "ناظم الغزالي" }, player2: { name: "طلال مداح" }, hint: "فنانان لهما بصمة في الغناء العراقي والسعودي." },
+                { id: "ap20", player1: { name: "الشيخ زايد بن سلطان آل نهيان" }, player2: { name: "الملك عبد الله بن عبد العزيز" }, hint: "حاكمان عربيان أسسا دولاً حديثة." },
+                { id: "ap21", player1: { name: "يوسف شاهين" }, player2: { name: "عاطف الطيب" }, hint: "مخرجان مصريان كبيران، لهما أفلام خالدة." },
+                { id: "ap22", player1: { name: "نوال الكويتية" }, player2: { name: "أحلام الشامسي" }, hint: "نجمتا الغناء الخليجي." },
+                { id: "ap23", player1: { name: "أبو القاسم الشابي" }, player2: { name: "إيليا أبو ماضي" }, hint: "شاعران عربيان شهيران من تونس ولبنان." },
+                { id: "ap24", player1: { name: "ليلى مراد" }, player2: { name: "أسمهان" }, hint: "مطربتان من الزمن الجميل، من أصول مصرية وسورية." },
+                { id: "ap25", player1: { name: "هاني شاكر" }, player2: { name: "كاظم الساهر" }, hint: "فنانان عربيان لهما قاعدة جماهيرية عريضة." },
+                { id: "ap26", player1: { name: "سميرة توفيق" }, player2: { name: "صباح فخري" }, hint: "فنانان سوريان اشتهرا بالغناء الفولكلوري." },
+                { id: "ap27", player1: { name: "أحمد السقا" }, player2: { name: "كريم عبد العزيز" }, hint: "نجما سينما الحركة المصرية." },
+                { id: "ap28", player1: { name: "طلال الرشيد" }, player2: { name: "فهد العبد المحسن" }, hint: "شاعرا نبطيات سعوديان." },
+                { id: "ap29", player1: { name: "محمد منير" }, player2: { name: "علي الحجار" }, hint: "مطربان مصريان مميزان." },
+                { id: "ap30", player1: { name: "حليمة بولند" }, player2: { name: "فايز المالكي" }, hint: "شخصيتان إعلاميتان وفنيتان معروفتان." },
+                { id: "ap31", player1: { name: "عبدالله الرويشد" }, player2: { name: "نوال الكويتية" }, hint: "قطبان في الغناء الكويتي." },
+                { id: "ap32", player1: { name: "إليسا" }, player2: { name: "نانسي عجرم" }, hint: "نجمتا البوب اللبناني." },
+                { id: "ap33", player1: { name: "ماجد المهندس" }, player2: { name: "فؤاد عبدالواحد" }, hint: "فنانان عراقي ويمني شهيران في الخليج." },
+                { id: "ap34", player1: { name: "غادة عبد الرازق" }, player2: { name: "دينا الشربيني" }, hint: "نجمتان مصريتان في الدراما." },
+                { id: "ap35", player1: { name: "فهد العتيبي" }, player2: { name: "عصام الشوالي" }, hint: "معلقان رياضيان عربيان شهيران." },
+                { id: "ap36", player1: { name: "علي بابا" }, player2: { name: "سندباد" }, hint: "شخصيتان أسطوريتان من ألف ليلة وليلة." },
+                { id: "ap37", player1: { name: "أبو نواس" }, player2: { name: "المتنبي" }, hint: "شاعران عربيان كلاسيكيان عظيمان." },
+                { id: "ap38", player1: { name: "ابن سينا" }, player2: { name: "الخوارزمي" }, hint: "عالمان عربيان شهيران في الطب والرياضيات." },
+                { id: "ap39", player1: { name: "جبران خليل جبران" }, player2: { name: "ميخائيل نعيمة" }, hint: "أديبان لبنانيان من الرابطة القلمية." },
+                { id: "ap40", player1: { name: "محمد بن راشد آل مكتوم" }, player2: { name: "محمد بن سلمان" }, hint: "قائدان مؤثران في دول الخليج." },
+                { id: "ap41", player1: { name: "شيرين عبد الوهاب" }, player2: { name: "أنغام" }, hint: "مطربتان مصريتان صاحبتا صوت قوي." },
+                { id: "ap42", player1: { name: "محمود سعيد" }, player2: { name: "عبد الهادي الجزار" }, hint: "فنانان تشكيليان مصريان رائدان." },
+                { id: "ap43", player1: { name: "أحمد حلمي" }, player2: { name: "منى زكي" }, hint: "زوجان فنانان مصريان معروفان." },
+                { id: "ap44", player1: { name: "صباح الجزائري" }, player2: { name: "سلمى المصري" }, hint: "نجمتان سوريتان في الدراما." },
+                { id: "ap45", player1: { name: "عمرو دياب" }, player2: { name: "تامر حسني" }, hint: "نجمان مصريان في موسيقى البوب." },
+                { id: "ap46", player1: { name: "نادية الجندي" }, player2: { name: "نبيلة عبيد" }, hint: "نجمتا الإثارة والتشويق في السينما المصرية." },
+                { id: "ap47", player1: { name: "قصي خولي" }, player2: { name: "تيم حسن" }, hint: "نجمان سوريان في الدراما العربية." },
+                { id: "ap48", player1: { name: "راغب علامة" }, player2: { name: "وائل كفوري" }, hint: "مطربان لبنانيان شهيران." },
+                { id: "ap49", player1: { name: "محمد العريفي" }, player2: { name: "عائض القرني" }, hint: "داعيان إسلاميان سعوديان معروفان." },
+                { id: "ap50", player1: { name: "إلياس الرحباني" }, player2: { name: "زياد الرحباني" }, hint: "ملحنان وموسيقيان لبنانيان من عائلة فنية عريقة." }
+            ],
+            "footballPlayers": [ // Main game pairs
+                { id: "fp1", player1: { name: "ليونيل ميسي" }, player2: { name: "كريستيانو رونالدو" }, hint: "أشهر لاعبين في العصر الحديث، منافسة أزلية." },
+                { id: "fp2", player1: { name: "محمد صلاح" }, player2: { name: "رياض محرز" }, hint: "نجمان عربيان إفريقيان، متألقان في أوروبا." },
+                { id: "fp3", player1: { name: "دييغو مارادونا" }, player2: { name: "بيليه" }, hint: "أسطورتان معتزلتان من أمريكا اللاتينية، أعظم من لمس الكرة." },
+                { id: "fp4", player1: { name: "زين الدين زيدان" }, player2: { name: "رونالدو نازاريو" }, hint: "أيقونتان من التسعينيات وأوائل الألفينيات، فازا بكأس العالم." },
+                { id: "fp5", player1: { name: "كيليان مبابي" }, player2: { name: "إيرلينج هالاند" }, hint: "هدافان شابان يسيطران على المشهد حاليًا، من الأفضل في جيلهما." },
+                { id: "fp6", player1: { name: "يوهان كرويف" }, player2: { name: "فرانز بيكنباور" }, hint: "أسطورتان أوروبيتان من السبعينيات، أحدهما هولندي والآخر ألماني." },
+                { id: "fp7", player1: { name: "رونالدينيو" }, player2: { name: "كاكا" }, hint: "نجمان برازيليان حائزان على الكرة الذهبية، اشتهرا في إيطاليا وإسبانيا." },
+                { id: "fp8", player1: { name: "سيرجيو راموس" }, player2: { name: "جيرارد بيكيه" }, hint: "مدافعان إسبانيان شهيران من ريال مدريد وبرشلونة." },
+                { id: "fp9", player1: { name: "جيانلويجي بوفون" }, player2: { name: "إيكر كاسياس" }, hint: "حارسا مرمى أسطوريان، قادا منتخبيهما للفوز بكأس العالم." },
+                { id: "fp10", player1: { name: "فرانشيسكو توتي" }, player2: { name: "باولو مالديني" }, hint: "رمزان للوفاء لأنديتهم الإيطالية، روما وميلان." },
+                { id: "fp11", player1: { name: "أندريس إنييستا" }, player2: { name: "تشافي هيرنانديز" }, hint: "ثنائي خط وسط أسطوري لبرشلونة ومنتخب إسبانيا." },
+                { id: "fp12", player1: { name: "ديفيد بيكهام" }, player2: { name: "مايكل أوين" }, hint: "نجمان إنجليزيان شهيران من جيل التسعينيات وأوائل الألفينيات." },
+                { id: "fp13", player1: { name: "روبرتو كارلوس" }, player2: { name: "كافو" }, hint: "ظهيران برازيليان أيقونيان، أحدهما أيسر والآخر أيمن." },
+                { id: "fp14", player1: { name: "ديدييه دروغبا" }, player2: { name: "صامويل إيتو" }, hint: "مهاجمان إفريقيان أسطوريان، تألقا في دوري أبطال أوروبا." },
+                { id: "fp15", player1: { name: "تييري هنري" }, player2: { name: "دنيس بيركامب" }, hint: "مهاجمان أسطوريان لأرسنال الإنجليزي." },
+                { id: "fp16", player1: { name: "فيرناندو توريس" }, player2: { name: "ديفيد فيا" }, hint: "مهاجمان إسبانيان قادا منتخبهم للفوز بكأس العالم ويورو." },
+                { id: "fp17", player1: { name: "لوكا مودريتش" }, player2: { name: "توني كروس" }, hint: "لاعبا خط وسط أسطوريان لريال مدريد، فازا بدوري الأبطال عدة مرات." },
+                { id: "fp18", player1: { name: "نغولو كانتي" }, player2: { name: "كاسيميرو" }, hint: "لاعبا وسط دفاعيان من الأفضل في العالم." },
+                { id: "fp19", player1: { name: "ساديو ماني" }, player2: { name: "بيير إيمريك أوباميانغ" }, hint: "مهاجمان إفريقيان، تنافسا في الدوري الإنجليزي." },
+                { id: "fp20", player1: { name: "روبيرتو باجيو" }, player2: { name: "أليساندرو ديل بييرو" }, hint: "نجمان إيطاليان، أحدهما صاحب الضفيرة الذهبية." },
+                { id: "fp21", player1: { name: "خوان رومان ريكيلمي" }, player2: { name: "جبريل باتيستوتا" }, hint: "لاعبا أرجنتينيان، أحدهما صانع ألعاب والآخر هداف." },
+                { id: "fp22", player1: { name: "بول بوغبا" }, player2: { name: "آنطوان غريزمان" }, hint: "نجمان فرنسيان فازا بكأس العالم 2018." },
+                { id: "fp23", player1: { name: "ألفونسو ديفيز" }, player2: { name: "جود بيلينغهام" }, hint: "لاعبان شابان موهوبان من كندا وإنجلترا." },
+                { id: "fp24", player1: { name: "جياني إنفانتينو" }, player2: { name: "سيب بلاتر" }, hint: "رئيسان سابقان وحاليان للفيفا." },
+                { id: "fp25", player1: { name: "سيرجيو بوسكيتس" }, player2: { name: "تياغو ألكانتارا" }, hint: "لاعبا وسط إسبانيان، خرجا من أكاديمية برشلونة." },
+                { id: "fp26", player1: { name: "رحيم ستيرلينغ" }, player2: { name: "ليروي ساني" }, hint: "جناحان هجوميان سريعان، تألقا في مانشستر سيتي." },
+                { id: "fp27", player1: { name: "كريم بنزيما" }, player2: { name: "روبرت ليفاندوفسكي" }, hint: "مهاجمان صريحان من الطراز الرفيع في العصر الحديث." },
+                { id: "fp28", player1: { name: "فرناندو ريدوندو" }, player2: { name: "كلود ماكيليلي" }, hint: "لاعبا خط وسط دفاعيان أسطوريان لريال مدريد." },
+                { id: "fp29", player1: { name: "أندريا بيرلو" }, player2: { name: "بافل نيدفيد" }, hint: "صانعا لعب إيطالي وتشيكي، من أساطير خط الوسط." },
+                { id: "fp30", player1: { name: "جيجي ريفا" }, player2: { name: "باولو روسي" }, hint: "هدافان إيطاليان تاريخيان." },
+                { id: "fp31", player1: { name: "مانويل نوير" }, player2: { name: "مارك أندريه تير شتيغن" }, hint: "حارسا مرمى ألمانيان بارزان." },
+                { id: "fp32", player1: { name: "فان دايك" }, player2: { name: "كاليدو كوليبالي" }, hint: "مدافعان قويان من طراز عالمي." },
+                { id: "fp33", player1: { name: "سيرجيو أغويرو" }, player2: { name: "لويس سواريز" }, hint: "مهاجمان أرجنتيني وأوروغوياني، تألقا في إنجلترا وإسبانيا." },
+                { id: "fp34", player1: { name: "إدين هازارد" }, player2: { name: "كيفن دي بروين" }, hint: "نجمان بلجيكيان مميزان." },
+                { id: "fp35", player1: { name: "علي دائي" }, player2: { name: "سون هيونغ مين" }, hint: "هداف دولي أسطوري من آسيا ولاعب كوري جنوبي نجم." },
+                { id: "fp36", player1: { name: "أوليفر كان" }, player2: { name: "بيتر شمايكل" }, hint: "حارسا مرمى أسطوريان من ألمانيا والدنمارك." },
+                { id: "fp37", player1: { name: "بول غاسكوين" }, player2: { name: "جورج بيست" }, hint: "لاعبان إنجليزيان وإيرلنديان شماليان موهوبان، اشتهرا بشخصيتهما الكاريزمية." },
+                { id: "fp38", player1: { name: "زلاتان إبراهيموفيتش" }, player2: { name: "ديدييه دروغبا" }, hint: "مهاجمان قويان ذوا شخصية مميزة." },
+                { id: "fp39", player1: { name: "كارلوس بويول" }, player2: { name: "جون تيري" }, hint: "قلبا دفاع وقائدان أسطوريان لبرشلونة وتشيلسي." },
+                { id: "fp40", player1: { name: "فيليب لام" }, player2: { name: "باستيان شفاينشتايغر" }, hint: "قائدان ألمانيان من بايرن ميونيخ ومنتخب ألمانيا." },
+                { id: "fp41", player1: { name: "مارسيلو" }, player2: { name: "داني ألفيس" }, hint: "ظهيران برازيليان أسطوريان، تألقا في ريال مدريد وبرشلونة." },
+                { id: "fp42", player1: { name: "غاريث بيل" }, player2: { name: "آريين روبن" }, hint: "جناحان سريعان وقويان، تألقا في ريال مدريد وبايرن ميونيخ." },
+                { id: "fp43", player1: { name: "كلارنس سيدورف" }, player2: { name: "إدغار دافيدز" }, hint: "لاعبا خط وسط هولنديان مميزان." },
+                { id: "fp44", player1: { name: "باتريك فييرا" }, player2: { name: "روي كين" }, hint: "اثنان من أعظم لاعبي خط الوسط في الدوري الإنجليزي، وخصمان عنيدان." },
+                { id: "fp45", player1: { name: "جيرد مولر" }, player2: { name: "أوزيبيو" }, hint: "هدافان أسطوريان من ألمانيا والبرتغال." },
+                { id: "fp46", player1: { name: "ريكاردو كاكا" }, player2: { name: "أندريه شيفتشينكو" }, hint: "نجمان سابقان لميلان الإيطالي، أحدهما برازيلي والآخر أوكراني." },
+                { id: "fp47", player1: { name: "جاري لينيكر" }, player2: { name: "آلان شيرر" }, hint: "هدافان إنجليزيان بارزان." },
+                { id: "fp48", player1: { name: "خوان ماتا" }, player2: { name: "سانتي كازورلا" }, hint: "صانعا لعب إسبانيان موهوبان." },
+                { id: "fp49", player1: { name: "هنريك لارسون" }, player2: { name: "فان بيرسي" }, hint: "مهاجمان سويدي وهولندي شهيران." },
+                { id: "fp50", player1: { name: "فينسنت كومباني" }, player2: { name: "يايا توريه" }, hint: "قائد ولاعب وسط أسطوريان لمانشستر سيتي." }
+            ],
+            "generalPublicFigures": [
+                { id: "gp1", player1: { name: "باراك أوباما" }, player2: { name: "نيلسون مانديلا" }, hint: "قائدان عالميان رمزا للتغيير الإيجابي." },
+                { id: "gp2", player1: { name: "إيلون ماسك" }, player2: { name: "جيف بيزوس" }, hint: "قطبان في عالم التكنولوجيا والفضاء." },
+                { id: "gp3", player1: { name: "ألبرت أينشتاين" }, player2: { name: "ستيفن هوكينغ" }, hint: "عالمان فيزياء نظرية، أحدثا ثورة في فهم الكون." },
+                { id: "gp4", player1: { name: "الملكة إليزابيث الثانية" }, player2: { name: "الأميرة ديانا" }, hint: "شخصيتان ملكيتان بريطانيتان مؤثرتان." },
+                { id: "gp5", player1: { name: "ماري كوري" }, player2: { name: "روزاليند فرانكلين" }, hint: "عالمتا فيزياء وكيمياء رائدتان." },
+                { id: "gp6", player1: { name: "ويليام شكسبير" }, player2: { name: "ليوناردو دافنشي" }, hint: "عملاق الأدب الإنجليزي وفنان ومخترع إيطالي." },
+                { id: "gp7", player1: { name: "بيل غيتس" }, player2: { name: "ستيف جوبز" }, hint: "مؤسسان لشركتين تكنولوجيتين عملاقتين (مايكروسوفت وآبل)." },
+                { id: "gp8", player1: { name: "أوبرا وينفري" }, player2: { name: "تايرا بانكس" }, hint: "شخصيتان إعلاميتان مؤثرتان في الولايات المتحدة." },
+                { id: "gp9", player1: { name: "فلاديمير بوتين" }, player2: { name: "دونالد ترامب" }, hint: "رئيسان دوليان معروفان بشخصيتهم القوية." },
+                { id: "gp10", player1: { name: "مارتن لوثر كينغ الابن" }, player2: { name: "غاندي" }, hint: "زعيمان عالميان في النضال السلمي للحقوق المدنية." },
+                { id: "gp11", player1: { name: "فنسنت فان خوخ" }, player2: { name: "بابلو بيكاسو" }, hint: "فنانان تشكيليان من هولندا وإسبانيا، من أعظم رسامي التاريخ." },
+                { id: "gp12", player1: { name: "إسحاق نيوتن" }, player2: { name: "جاليليو جاليلي" }, hint: "عالمان غيرا فهمنا للفيزياء والفلك." },
+                { id: "gp13", player1: { name: "آل باتشينو" }, player2: { name: "روبرت دي نيرو" }, hint: "نجمان سينمائيان أسطوريان من هوليوود." },
+                { id: "gp14", player1: { name: "أدولف هتلر" }, player2: { name: "بينيتو موسوليني" }, hint: "زعيمان سياسيان مثيران للجدل في القرن العشرين." },
+                { id: "gp15", player1: { name: "جوليا روبرتس" }, player2: { name: "ساندرا بولوك" }, hint: "نجمتا هوليوود شهيرتان بأفلام الكوميديا الرومانسية والدراما." },
+                { id: "gp16", player1: { name: "توم هانكس" }, player2: { name: "ليوناردو دي كابريو" }, hint: "ممثلا هوليوود حائزان على الأوسكار." },
+                { id: "gp17", player1: { name: "بيتهوفن" }, player2: { name: "موتسارت" }, hint: "موسيقاران كلاسيكيان ألماني ونمساوي، من أعظم الملحنين." },
+                { id: "gp18", player1: { name: "فلاديمير لينين" }, player2: { name: "جوزيف ستالين" }, hint: "زعيمان شيوعيان لهما تأثير كبير على التاريخ الروسي." },
+                { id: "gp19", player1: { name: "ألفريد هيتشكوك" }, player2: { name: "ستيفن سبيلبرغ" }, hint: "مخرجان سينمائيان أسطوريان في التشويق والخيال." },
+                { id: "gp20", player1: { name: "محمد علي كلاي" }, player2: { name: "مايك تايسون" }, hint: "ملاكمان أسطوريان من الولايات المتحدة." },
+                { id: "gp21", player1: { name: "أبراهام لينكولن" }, player2: { name: "جورج واشنطن" }, hint: "رئيسان أمريكيان تاريخيان، من الآباء المؤسسين." },
+                { id: "gp22", player1: { name: "مارلين مونرو" }, player2: { name: "إليزابيث تايلور" }, hint: "أيقونتا جمال وتمثيل من العصر الذهبي لهوليوود." },
+                { id: "gp23", player1: { name: "إلفيس بريسلي" }, player2: { name: "مايكل جاكسون" }, hint: "ملكا الروك أند رول والبوب." },
+                { id: "gp24", player1: { name: "جيمس بوند" }, player2: { name: "شرلوك هولمز" }, hint: "محققان خياليان أيقونيان في الأدب والسينما." },
+                { id: "gp25", player1: { name: "بيليه" }, player2: { name: "كريستيانو رونالدو" }, hint: "أيقونتان عالميتان لكرة القدم، أحدهما برازيلي والآخر برتغالي." },
+                { id: "gp26", player1: { name: "مارغريت تاتشر" }, player2: { name: "أنغيلا ميركل" }, hint: "قائدتان سياسيتان أوروبيتان مؤثرتان." },
+                { id: "gp27", player1: { name: "كونفوشيوس" }, player2: { name: "بوذا" }, hint: "فيلسوفان ومؤسسا ديانات عظماء." },
+                { id: "gp28", player1: { name: "جان جاك روسو" }, player2: { name: "فولتير" }, hint: "فلاسفة فرنسيون مؤثرون في عصر التنوير." },
+                { id: "gp29", player1: { name: "ميريل ستريب" }, player2: { name: "كيت بلانشيت" }, hint: "نجمتان ممثلتان حائزتان على جوائز أوسكار." },
+                { id: "gp30", player1: { name: "ليونيل ميسي" }, player2: { name: "روجر فيدرر" }, hint: "أيقونتان رياضيتان عالميتان، أحدهما في كرة القدم والآخر في التنس." },
+                { id: "gp31", player1: { name: "ميكل أنجلو" }, player2: { name: "رفائيل" }, hint: "فنانان من عصر النهضة الإيطالية، من عظماء النحت والرسم." },
+                { id: "gp32", player1: { name: "مارك زوكربيرغ" }, player2: { name: "جاك ما" }, hint: "مؤسسان لشركات تكنولوجية عملاقة (فيسبوك وعلي بابا)." },
+                { id: "gp33", player1: { name: "أليكساندر غراهام بيل" }, player2: { name: "توماس إديسون" }, hint: "مخترعان أمريكيان شهيران، أحدهما اخترع الهاتف والآخر المصباح الكهربائي." },
+                { id: "gp34", player1: { name: "فريدا كاهلو" }, player2: { name: "فان غوخ" }, hint: "فنانان تشكيليان مميزان بأعمالهما." },
+                { id: "gp35", player1: { name: "أودري هيبورن" }, player2: { name: "غريس كيلي" }, hint: "نجمتا هوليوود وأيقونتا أناقة." },
+                { id: "gp36", player1: { name: "جون ف. كينيدي" }, player2: { name: "رونالد ريغان" }, hint: "رئيسان أمريكيان شهيران في القرن العشرين." },
+                { id: "gp37", player1: { name: "بيونسيه" }, player2: { name: "أديل" }, hint: "مغنيتان عالميتان صاحبتا صوت قوي." },
+                { id: "gp38", player1: { name: "يوسين بولت" }, player2: { name: "مايكل جوردان" }, hint: "أيقونتان رياضيتان عالميتان، أحدهما في الجري والآخر في كرة السلة." },
+                { id: "gp39", player1: { name: "ستيفن كينغ" }, player2: { name: "ج.ك. رولينغ" }, hint: "كاتبان عالميان شهيران في الرعب والخيال." },
+                { id: "gp40", player1: { name: "بابلو إسكوبار" }, player2: { name: "آل كابوني" }, hint: "أشهر زعماء الجريمة في التاريخ." },
+                { id: "gp41", player1: { name: "وولفغانغ أماديوس موزارت" }, player2: { name: "لويس أرمسترونغ" }, hint: "موسيقاران أسطوريان من عصور مختلفة، أحدهما كلاسيكي والآخر جاز." },
+                { id: "gp42", player1: { name: "ماري تيريزا" }, player2: { name: "الأم تيريزا" }, hint: "شخصيتان عالميتان معروفتان بالعمل الخيري." },
+                { id: "gp43", player1: { name: "تشي جيفارا" }, player2: { name: "فيدل كاسترو" }, hint: "زعيمان ثوريان كوبيان." },
+                { id: "gp44", player1: { name: "مارك توين" }, player2: { name: "تشارلز ديكنز" }, hint: "روائيان عالميان شهيران، أحدهما أمريكي والآخر بريطاني." },
+                { id: "gp45", player1: { name: "بيل كلينتون" }, player2: { name: "جورج دبليو بوش" }, hint: "رئيسان أمريكيان سابقان من حزبين مختلفين." },
+                { id: "gp46", player1: { name: "باراك أوباما" }, player2: { name: "هيلاري كلينتون" }, hint: "رئيس أمريكي سابق وزوجته، سيدة أولى ووزيرة خارجية سابقة." },
+                { id: "gp47", player1: { name: "أنجلينا جولي" }, player2: { name: "جوني ديب" }, hint: "نجمان سينمائيان عالميان معروفان بأعمالهما الخيرية." },
+                { id: "gp48", player1: { name: "الأمير ويليام" }, player2: { name: "الأمير هاري" }, hint: "أميران بريطانيان من العائلة المالكة." },
+                { id: "gp49", player1: { name: "جون لينون" }, player2: { name: "بول مكارتني" }, hint: "عضوان مؤسسان في فرقة البيتلز الأسطورية." },
+                { id: "gp50", player1: { name: "الملكة إليزابيث الثانية" }, player2: { name: "الملك تشارلز الثالث" }, hint: "ملكة بريطانيا السابقة وولي عهدها الذي أصبح ملكًا." }
+            ]
+        };
+
+        // --- New Data for Player Journey Bonus Round (Independent Players) ---
+        const playerJourneyPlayers = [
+            { name: "زين الدين زيدان", career: "بدأ مسيرته في نادي كان الفرنسي، ثم انتقل إلى بوردو ثم يوفنتوس الإيطالي، واختتم مسيرته في ريال مدريد الإسباني. حقق كأس العالم ودوري أبطال أوروبا كلاعب ومدرب." },
+            { name: "ديدييه دروغبا", career: "بدأ في لو مان الفرنسي، ثم غانغون ومارسيليا. أصبح أسطورة في تشيلسي الإنجليزي، ولعب أيضاً في شنغهاي شينهوا وغلطة سراي ومونريال إمباكت." },
+            { name: "تشافي هيرنانديز", career: "قضى معظم مسيرته مع نادي برشلونة الإسباني كلاعب وسط، ثم انتقل إلى السد القطري كلاعب ومدرب، وعاد لتدريب برشلونة." },
+            { name: "جيانلويجي بوفون", career: "بدأ مسيرته في بارما الإيطالي، ثم قضى معظمها مع يوفنتوس الإيطالي، ولعب موسمًا في باريس سان جيرمان الفرنسي. حقق كأس العالم مع إيطاليا." },
+            { name: "رونالدينيو", career: "بدأ في غريميو البرازيلي، ثم لعب في باريس سان جيرمان، وأصبح نجماً عالمياً في برشلونة الإسباني، ثم لعب لميلان الإيطالي وفلامنغو وأتلتيكو مينيرو في البرازيل." },
+            { name: "محمد صلاح", career: "بدأ في المقاولون العرب المصري، لعب في بازل السويسري، تشيلسي الإنجليزي، فيورنتينا وروما الإيطاليين، وحاليًا نجم ليفربول الإنجليزي." },
+            { name: "لويس فيغو", career: "بدأ في سبورتنج لشبونة البرتغالي، ثم انتقل إلى برشلونة الإسباني، وانتقل بعدها إلى ريال مدريد في صفقة تاريخية، واختتم مسيرته في إنتر ميلان الإيطالي." },
+            { name: "بول سكولز", career: "قضى مسيرته الكروية بأكملها مع نادي مانشستر يونايتد الإنجليزي، ويعتبر أحد أعظم لاعبي خط الوسط في جيله." },
+            { name: "فابيو كانافارو", career: "المدافع الإيطالي الشهير، لعب لأندية نابولي وبارما وإنتر ميلان ويوفنتوس وريال مدريد. فاز بكأس العالم مع إيطاليا وحصل على الكرة الذهبية." },
+            { name: "فرانشيسكو توتي", career: "أسطورة نادي روما الإيطالي، قضى مسيرته الكروية بأكملها مع نادي روما، ويعتبر رمزًا للوفاء في كرة القدم." },
+            { name: "أندريا بيرلو", career: "لاعب خط وسط إيطالي، اشتهر بلعبه مع إنتر ميلان، ميلان، ويوفنتوس، وحقق كأس العالم 2006 مع إيطاليا." },
+            { name: "تييري هنري", career: "مهاجم فرنسي، بدأ في موناكو، لمع في أرسنال، ثم لعب لبرشلونة ونيويورك ريد بولز. يعتبر الهداف التاريخي لأرسنال." },
+            { name: "ديدييه ديشامب", career: "لاعب وسط فرنسي، لعب لمرسيليا ويوفنتوس وفاز بكأس العالم 1998 كلاعب و2018 كمدرب." },
+            { name: "رود فان نيستلروي", career: "مهاجم هولندي، تألق مع آيندهوفن ومانشستر يونايتد وريال مدريد. معروف بقدرته التهديفية العالية." },
+            { name: "آريين روبن", career: "جناح هولندي، لعب لتشيلسي وريال مدريد وبايرن ميونيخ، اشتهر بمهاراته الفردية وتسديداته من الطرف الأيمن." },
+            { name: "فينسنت كومباني", career: "مدافع بلجيكي، بدأ في أندرلخت، ثم هامبورغ، وأصبح قائدًا أسطوريًا لمانشستر سيتي." },
+            { name: "يايا توريه", career: "لاعب خط وسط إيفواري، لعب لبرشلونة ومانشستر سيتي، معروف بقوته البدنية ومهاراته الهجومية." },
+            { name: "علي دائي", career: "مهاجم إيراني، يعتبر الهداف التاريخي للمنتخبات الوطنية لفترة طويلة، لعب لأندية ألمانية منها بايرن ميونيخ وهرتا برلين." },
+            { name: "هاري كين", career: "مهاجم إنجليزي، قضى معظم مسيرته في توتنهام هوتسبير الإنجليزي قبل الانتقال إلى بايرن ميونيخ الألماني، وهو قائد منتخب إنجلترا." },
+            { name: "كريم بنزيما", career: "مهاجم فرنسي، بدأ في ليون، وقضى معظم مسيرته مع ريال مدريد، حيث أصبح من الهدافين التاريخيين للنادي، ثم انتقل إلى الاتحاد السعودي." },
+            { name: "روبرت ليفاندوفسكي", career: "مهاجم بولندي، تألق مع بوروسيا دورتموند وبايرن ميونيخ في ألمانيا، وحاليًا يلعب في برشلونة الإسباني." },
+            { name: "جورج وياه", career: "مهاجم ليبري، لعب لموناكو وباريس سان جيرمان وميلان وتشيلسي ومانشستر سيتي. هو اللاعب الإفريقي الوحيد الذي فاز بالكرة الذهبية." },
+            { name: "خافيير زانيتي", career: "مدافع أرجنتيني، قضى معظم مسيرته في إنتر ميلان الإيطالي، واشتهر بولائه وقدرته على اللعب في مراكز متعددة." },
+            { name: "ديدييه دروغبا", career: "مهاجم إيفواري، لمع مع مارسيليا ثم أصبح أسطورة في تشيلسي، معروف بقوته البدنية وأهدافه الحاسمة في النهائيات." },
+            { name: "باتريك فييرا", career: "لاعب خط وسط فرنسي، اشتهر بلعبه مع أرسنال الإنجليزي، ولعب أيضاً ليوفنتوس وإنتر ميلان ومانشستر سيتي. فاز بكأس العالم 1998." },
+            { name: "زلاتان إبراهيموفيتش", career: "مهاجم سويدي، لعب لأندية أياكس، يوفنتوس، إنتر ميلان، برشلونة، ميلان، باريس سان جيرمان، مانشستر يونايتد، ولوس أنجلوس جالاكسي." },
+            { name: "فرانك لامبارد", career: "لاعب خط وسط إنجليزي، قضى معظم مسيرته مع تشيلسي الإنجليزي، ويعد الهداف التاريخي للنادي." },
+            { name: "ستيفن جيرارد", career: "لاعب خط وسط إنجليزي، قضى معظم مسيرته مع نادي ليفربول الإنجليزي، ويعد رمزًا للوفاء للنادي." },
+            { name: "جون تيري", career: "مدافع إنجليزي، قضى معظم مسيرته مع نادي تشيلسي الإنجليزي، وكان قائدًا للفريق والمنتخب." },
+            { name: "بول بوتي", career: "لاعب وسط فرنسي، فاز بكأس العالم 2018 مع منتخب بلاده، ولعب لأندية يوفنتوس ومانشستر يونايتد." },
+            { name: "كريم حافظ", career: "مدافع مصري، لعب لأندية ليرس وواد دجلة والعديد من الأندية التركية واليونانية." },
+            { name: "حسام حسن", career: "أسطورة كرة القدم المصرية، هداف تاريخي للنادي الأهلي والزمالك ومنتخب مصر." },
+            { name: "رياض محرز", career: "جناح جزائري، لعب لليستر سيتي ومانشستر سيتي في إنجلترا، فاز بالدوري الإنجليزي وكأس الأمم الأفريقية، وحاليًا يلعب في الأهلي السعودي." },
+            { name: "أحمد حسام ميدو", career: "مهاجم مصري، لعب لأندية أياكس، سيلتا فيغو، مارسيليا، روما، توتنهام، وغيرها الكثير في أوروبا." },
+            { name: "سامي الجابر", career: "أسطورة كرة القدم السعودية، قضى مسيرته في نادي الهلال، ولعب لفترة قصيرة في ولفرهامبتون الإنجليزي." },
+            { name: "مجيد بوقرة", career: "مدافع جزائري، لعب لأندية غونينغ وشارلتون وأيضًا في رينجرز الأسكتلندي، وهو من قادة منتخب الجزائر." },
+            { name: "عماد متعب", career: "مهاجم مصري، قضى معظم مسيرته مع النادي الأهلي المصري." },
+            { name: "ياسر القحطاني", career: "مهاجم سعودي، قضى معظم مسيرته مع نادي الهلال السعودي، ويعتبر أحد أبرز الهدافين في الكرة السعودية." },
+            { name: "عصام الحضري", career: "حارس مرمى مصري، يعتبر من أفضل حراس المرمى في تاريخ إفريقيا، لعب للعديد من الأندية المصرية والسويسرية." },
+            { name: "نور الدين أمرابط", career: "جناح مغربي، لعب لأندية بي إس في آيندهوفن وواتفورد ونادي النصر السعودي." },
+            { name: "يوسف النصيري", career: "مهاجم مغربي، تألق في الدوري الإسباني مع ليغانيس وإشبيلية." },
+            { name: "فراس البريكان", career: "مهاجم سعودي صاعد، لعب للعديد من الأندية السعودية مثل النصر والأهلي والفتح." },
+            { name: "سالم الدوسري", career: "جناح سعودي، قضى معظم مسيرته مع نادي الهلال السعودي، وخاض تجربة قصيرة في فياريال الإسباني." },
+            { name: "عبد الرزاق حمد الله", career: "مهاجم مغربي، تألق في الدوري السعودي مع النصر والاتحاد." },
+            { name: "أكرم عفيف", career: "جناح قطري، لعب لنادي فياريال وسبورتنج خيخون في إسبانيا، وحاليًا نجم نادي السد القطري والمنتخب القطري." },
+            { name: "عمر السومة", career: "مهاجم سوري، تألق في الدوري السعودي مع الأهلي، وحاليًا يلعب في العربي القطري." },
+            { name: "بغداد بونجاح", career: "مهاجم جزائري، تألق في الدوري القطري مع نادي السد." },
+            { name: "طارق حامد", career: "لاعب وسط مصري، لعب للعديد من الأندية المصرية مثل الزمالك، وحاليًا يلعب في ضمك السعودي." },
+            { name: "أشرف حكيمي", career: "مدافع مغربي، لعب لريال مدريد، بوروسيا دورتموند، إنتر ميلان، وحاليًا نجم باريس سان جيرمان." },
+            { name: "ياسين بونو", career: "حارس مرمى مغربي، تألق في الدوري الإسباني مع جيرونا وإشبيلية، وحاليًا يلعب في الهلال السعودي." }
+        ];
+
+
+        // --- Game State (loaded from localStorage or initialized) ---
+        let gameState = loadGameState();
+        let bonusRoundCurrentPlayer = null; // Stores the player object for the current bonus round instance
+        let currentActiveSection = 'setup'; // Tracks which section is currently visible ('setup', 'character-assignment', 'game-interface', 'player-journey', 'instructions')
+
+        function loadGameState() {
+            const savedState = localStorage.getItem('characterGuessingGameState');
+            if (savedState) {
+                return JSON.parse(savedState);
+            }
+            return {
+                team1: { name: '', score: 0, character: null, secretCharacter: null }, // character is what they're trying to guess, secretCharacter is what they possess
+                team2: { name: '', score: 0, character: null, secretCharacter: null },
+                currentTurn: 'team1', // 'team1' or 'team2'
+                round: 0,
+                category: '',
+                currentRoundLog: [], // Log for current round's Q&A
+                totalRoundsLog: [] // Log for all rounds
+            };
+        }
+
+        function saveGameState() {
+            localStorage.setItem('characterGuessingGameState', JSON.stringify(gameState));
+        }
+
+        // --- Helper Functions ---
+
+        // Append messages to the round log
+        function appendToRoundLog(message) {
+            const logEntry = document.createElement('p');
+            logEntry.className = 'log-entry';
+            const timestamp = new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            roundLogDiv.prepend(logEntry); // Add to the top for most recent first
+            gameState.currentRoundLog.push(message); // Store in state for current round
+            saveGameState();
+        }
+
+        // Add to total game log at the end of round
+        function appendToTotalLog(message) {
+            gameState.totalRoundsLog.push(message);
+            saveGameState();
+        }
+
+        // Render team scoreboard
+        function renderScoreboard() {
+            teamsScoreBoard.innerHTML = `
+                <div class="team-score-item ${gameState.currentTurn === 'team1' ? 'current-turn-indicator' : ''}">
+                    <span class="font-bold text-blue-800 text-lg">${gameState.team1.name}:</span>
+                    <span class="text-xl font-bold text-green-700">${gameState.team1.score} جولة</span>
+                </div>
+                <div class="team-score-item ${gameState.currentTurn === 'team2' ? 'current-turn-indicator' : ''}">
+                    <span class="font-bold text-blue-800 text-lg">${gameState.team2.name}:</span>
+                    <span class="text-xl font-bold text-green-700">${gameState.team2.score} جولة</span>
+                </div>
+            `;
+            currentTurnTeam.textContent = gameState[gameState.currentTurn].name;
+            winTeam1NameDisplay.textContent = gameState.team1.name;
+            winTeam2NameDisplay.textContent = gameState.team2.name;
+            winTeam1BonusNameDisplay.textContent = gameState.team1.name; // For bonus round
+            winTeam2BonusNameDisplay.textContent = gameState.team2.name; // For bonus round
+        }
+
+        // Render character assignment options
+        function renderCharacterPairs() {
+            characterPairsContainer.innerHTML = '';
+            const pairs = balancedCharacterPairs[gameState.category];
+            if (!pairs || pairs.length === 0) {
+                characterPairsContainer.innerHTML = '<p class="text-red-600">لا توجد أزواج شخصيات لهذه الفئة.</p>';
+                return;
+            }
+
+            pairs.forEach((pairObj, index) => {
+                const pairDiv = document.createElement('div');
+                // Use the new class for dark mode pair items
+                pairDiv.className = 'p-4 rounded-xl shadow-sm cursor-pointer transition duration-300 ease-in-out transform hover:scale-105 character-pair-item-dark';
+                pairDiv.setAttribute('data-pair-index', index);
+                pairDiv.onclick = () => selectCharacterPair(index);
+                pairDiv.innerHTML = `
+                    <p class="font-bold text-gray-800 mb-1">زوج الشخصيات ${index + 1}:</p>
+                    <p class="text-lg text-blue-700 font-semibold">${pairObj.player1.name} و ${pairObj.player2.name}</p>
+                    <p class="text-sm text-gray-600">${pairObj.hint}</p>
+                `;
+                characterPairsContainer.appendChild(pairDiv);
+            });
+            assignTeam1Name.textContent = gameState.team1.name;
+            assignTeam2Name.textContent = gameState.team2.name;
+        }
+
+        function selectCharacterPair(index) {
+            const pairs = balancedCharacterPairs[gameState.category];
+            if (!pairs) return;
+
+            const selectedPairObj = pairs[index];
+
+            // Randomly assign which character goes to which team to keep it balanced
+            const randomOrder = Math.random() < 0.5;
+            gameState.team1.character = randomOrder ? selectedPairObj.player1 : selectedPairObj.player2; // This is the character they need to guess (opponent's character)
+            gameState.team2.character = randomOrder ? selectedPairObj.player2 : selectedPairObj.player1; // This is the character they need to guess (opponent's character)
+
+            gameState.team1.secretCharacter = randomOrder ? selectedPairObj.player2 : selectedPairObj.player1; // This is the character they have
+            gameState.team2.secretCharacter = randomOrder ? selectedPairObj.player1 : selectedPairObj.player2; // This is the character they have
+
+            // Update display for host
+            assignedChar1.textContent = gameState.team1.secretCharacter.name; // Team 1 has this character
+            assignedChar2.textContent = gameState.team2.secretCharacter.name; // Team 2 has this character
+
+            // Visually mark selected pair - now with dark mode specific colors
+            document.querySelectorAll('#characterPairsContainer > div').forEach(div => {
+                div.classList.remove('selected'); /* Remove old selected class */
+                div.style.borderColor = ''; /* Clear inline style */
+                div.style.boxShadow = ''; /* Clear inline style */
+                div.style.backgroundColor = ''; /* Clear inline style */
+                // Re-apply base dark mode style if it was explicitly removed
+                div.classList.add('character-pair-item-dark');
+            });
+            const selectedDiv = document.querySelector(`[data-pair-index="${index}"]`);
+            selectedDiv.classList.add('selected'); /* Add new class for selected state */
+            selectedDiv.style.borderColor = '#63b3ed'; /* Brighter blue border for selection in dark mode */
+            selectedDiv.style.backgroundColor = '#314a6e'; /* Slightly brighter dark blue background for selection */
+            selectedDiv.style.boxShadow = '0 0 0 4px rgba(99, 179, 237, 0.4), 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.15)';
+
+            saveGameState();
+            appendToRoundLog(`تم اختيار زوج الشخصيات: ${selectedPairObj.player1.name} و ${selectedPairObj.player2.name}.`);
+            appendToRoundLog(`شخصية ${gameState.team1.name} هي: ${gameState.team1.secretCharacter.name}.`);
+            appendToRoundLog(`شخصية ${gameState.team2.name} هي: ${gameState.team2.secretCharacter.name}.`);
+            appendToRoundLog('الرجاء إبلاغ كل فريق بشخصيته سراً (شفهياً أو عبر رسالة خاصة).');
+        }
+
+        // --- Game Logic Functions ---
+
+        function startGameSetup() {
+            const team1Name = team1NameInput.value.trim();
+            const team2Name = team2NameInput.value.trim();
+            const category = categorySelect.value;
+
+            if (!team1Name || !team2Name || !category) {
+                alert('الرجاء إدخال أسماء الفرق واختيار الفئة لبدء الجولة.');
+                return;
+            }
+
+            gameState.team1.name = team1Name;
+            gameState.team2.name = team2Name;
+            gameState.category = category;
+            gameState.round = 0; // Reset round count
+            gameState.team1.score = 0; // Reset scores
+            gameState.team2.score = 0;
+            gameState.totalRoundsLog = []; // Clear total log
+
+            setupSection.classList.add('hidden');
+            characterAssignmentSection.classList.remove('hidden');
+            gameInterface.classList.add('hidden'); // Ensure game interface is hidden initially
+            playerJourneySection.classList.add('hidden'); // Ensure bonus section is hidden
+            instructionsPage.classList.add('hidden'); // Ensure instructions are hidden
+
+            currentActiveSection = 'character-assignment'; // Update active section
+
+            renderCharacterPairs();
+            renderScoreboard(); // Show initial scoreboard with names
+            appendToTotalLog(`بدأت لعبة جديدة بين ${gameState.team1.name} و ${gameState.team2.name} في فئة ${categorySelect.options[categorySelect.selectedIndex].text}.`);
+            appendToRoundLog('الرجاء اختيار زوج الشخصيات لهذه الجولة وتعيينها سراً للفرق.');
+            saveGameState();
+        }
+
+        function confirmCharactersAndStartRound() {
+            if (!gameState.team1.secretCharacter || !gameState.team2.secretCharacter) {
+                alert('الرجاء اختيار وتعيين الشخصيات للفريقين أولاً.');
+                return;
+            }
+            if (gameState.currentTurn === 'team1' && gameState.round === 0) { // First round, randomize who starts
+                 gameState.currentTurn = Math.random() < 0.5 ? 'team1' : 'team2';
+            }
+
+            gameState.round++;
+            gameState.currentRoundLog = []; // Clear round log for new round
+
+            characterAssignmentSection.classList.add('hidden');
+            gameInterface.classList.remove('hidden');
+            playerJourneySection.classList.add('hidden'); // Ensure bonus section is hidden
+            instructionsPage.classList.add('hidden'); // Ensure instructions are hidden
+
+            currentActiveSection = 'game-interface'; // Update active section
+
+            currentRoundDisplay.textContent = gameState.round;
+            appendToRoundLog(`بدأت الجولة ${gameState.round}.`);
+            appendToRoundLog(`الدور الأول على فريق ${gameState[gameState.currentTurn].name}.`);
+            renderScoreboard();
+            saveGameState();
+
+            // Reset and stop timer when new round starts (optional, user wanted it separate)
+            resetTimer();
+        }
+
+        function switchTurn() {
+            gameState.currentTurn = gameState.currentTurn === 'team1' ? 'team2' : 'team1';
+            appendToRoundLog(`انتقل الدور إلى فريق: ${gameState[gameState.currentTurn].name}.`);
+            renderScoreboard();
+            saveGameState();
+        }
+
+        function declareRoundWinner(winningTeamId) {
+            const winningTeam = gameState[winningTeamId];
+            winningTeam.score++;
+            appendToRoundLog(`فاز فريق ${winningTeam.name} بالجولة ${gameState.round}!`);
+            appendToTotalLog(`الجولة ${gameState.round}: فاز ${winningTeam.name}.`);
+            alert(`فاز فريق ${winningTeam.name} بالجولة ${gameState.round}!`); // Temporary alert for confirmation
+
+            // Hide main game controls, show new round button and optional bonus round button
+            passTurnBtn.classList.add('hidden');
+            winTeam1Btn.classList.add('hidden');
+            winTeam2Btn.classList.add('hidden');
+            startNewRoundBtn.classList.remove('hidden');
+            
+            // Show bonus round button ONLY if it's a football category
+            if (gameState.category === "footballPlayers") {
+                startPlayerJourneyBtn.classList.remove('hidden');
+            }
+
+            renderScoreboard(); // Update score display
+
+            // Stop and reset timer when round ends
+            pauseTimer();
+            resetTimer();
+            saveGameState();
+        }
+
+        function startNewRoundWorkflow() {
+            // Reset for new round
+            gameState.team1.character = null;
+            gameState.team2.character = null;
+            gameState.team1.secretCharacter = null;
+            gameState.team2.secretCharacter = null;
+            gameState.currentRoundLog = [];
+
+            // Show character assignment again
+            gameInterface.classList.add('hidden');
+            characterAssignmentSection.classList.remove('hidden');
+            startNewRoundBtn.classList.add('hidden'); // Hide button until next round
+            startPlayerJourneyBtn.classList.add('hidden'); // Hide bonus round button
+            instructionsPage.classList.add('hidden'); // Ensure instructions are hidden
+
+            currentActiveSection = 'character-assignment'; // Update active section
+
+            // Re-show main game controls that were hidden after win
+            passTurnBtn.classList.remove('hidden');
+            winTeam1Btn.classList.remove('hidden');
+            winTeam2Btn.classList.remove('hidden');
+
+            roundLogDiv.innerHTML = '<p class="text-gray-500">سجل أسئلة وأجوبة هذه الجولة يظهر هنا.</p>'; // Clear round log display
+
+            renderCharacterPairs(); // Render new character pairs for assignment
+            appendToRoundLog('الجولة الجديدة جاهزة للبدء! الرجاء اختيار وتعيين الشخصيات.');
+            saveGameState();
+        }
+
+        // --- Player Journey Bonus Round Functions ---
+        function startPlayerJourneyRound() {
+            // Hide main game interface
+            gameInterface.classList.add('hidden');
+            // Show player journey section
+            playerJourneySection.classList.remove('hidden');
+            instructionsPage.classList.add('hidden'); // Ensure instructions are hidden
+
+            currentActiveSection = 'player-journey'; // Update active section
+
+            // Populate select options for player journey from the *new independent list*
+            playerJourneySelect.innerHTML = '<option value="">-- اختر لاعب --</option>';
+            playerJourneyPlayers.forEach(player => {
+                const option = document.createElement('option');
+                option.value = player.name;
+                option.textContent = player.name;
+                playerJourneySelect.appendChild(option);
+            });
+            
+            playerCareerText.textContent = ''; // Clear previous career text
+            careerPathDisplay.classList.add('hidden'); // Hide career display
+            revealPlayerNameBtn.classList.remove('hidden'); // Ensure reveal name button is visible
+            winTeam1BonusRoundBtn.classList.remove('hidden');
+            winTeam2BonusRoundBtn.classList.remove('hidden');
+            returnToMainGameBtn.classList.add('hidden'); // Hide return button initially
+            revealCareerBtn.classList.remove('hidden'); // Show reveal button
+
+            appendToRoundLog('بدأت فقرة "مسيرة اللاعب" الإضافية!');
+            saveGameState();
+        }
+
+        function revealPlayerCareer() {
+            const selectedPlayerName = playerJourneySelect.value;
+            bonusRoundCurrentPlayer = playerJourneyPlayers.find(p => p.name === selectedPlayerName);
+
+            if (bonusRoundCurrentPlayer && bonusRoundCurrentPlayer.career) {
+                playerCareerText.textContent = bonusRoundCurrentPlayer.career;
+                careerPathDisplay.classList.remove('hidden');
+                appendToRoundLog(`تم عرض مسيرة اللاعب: ${selectedPlayerName}`);
+            } else {
+                alert('الرجاء اختيار لاعب لديه مسيرة محددة في البيانات.');
+            }
+            saveGameState();
+        }
+
+        function revealBonusPlayerName() {
+            if (bonusRoundCurrentPlayer) {
+                alert(`اللاعب الذي كنتم تبحثون عنه هو: ${bonusRoundCurrentPlayer.name}!`); // Show actual player name
+                appendToRoundLog(`تم الكشف عن اسم اللاعب في فقرة المسيرة: ${bonusRoundCurrentPlayer.name}.`);
+                returnToMainGameBtn.classList.remove('hidden'); // Allow returning after revealing
+            } else {
+                alert('الرجاء اختيار وعرض مسيرة لاعب أولاً.');
+            }
+            saveGameState();
+        }
+
+        function declareBonusRoundWinner(winningTeamId) {
+            const winningTeam = gameState[winningTeamId];
+            winningTeam.score++; // Add bonus point
+            appendToRoundLog(`فاز فريق ${winningTeam.name} بفقرة مسيرة اللاعب! (+1 نقطة إضافية).`);
+            appendToTotalLog(`فقرة المسيرة: فاز ${winningTeam.name}.`);
+            alert(`فاز فريق ${winningTeam.name} بفقرة مسيرة اللاعب!`);
+
+            // Hide bonus round controls, show return button
+            revealCareerBtn.classList.add('hidden');
+            revealPlayerNameBtn.classList.add('hidden');
+            winTeam1BonusRoundBtn.classList.add('hidden');
+            winTeam2BonusRoundBtn.classList.add('hidden');
+            returnToMainGameBtn.classList.remove('hidden');
+            
+            renderScoreboard(); // Update main scoreboard
+            saveGameState();
+        }
+
+        function returnToMainGame() {
+            playerJourneySection.classList.add('hidden'); // Hide bonus round section
+            gameInterface.classList.remove('hidden'); // Show main game interface
+            startNewRoundBtn.classList.remove('hidden'); // Ensure "start new round" is visible
+            startPlayerJourneyBtn.classList.add('hidden'); // Hide bonus round button again
+            passTurnBtn.classList.remove('hidden'); // Re-show main game controls
+            winTeam1Btn.classList.remove('hidden');
+            winTeam2Btn.classList.remove('hidden');
+            playerJourneySelect.value = ''; // Reset select
+            playerCareerText.textContent = ''; // Clear career text
+            careerPathDisplay.classList.add('hidden'); // Hide career display
+            instructionsPage.classList.add('hidden'); // Ensure instructions are hidden
+
+            currentActiveSection = 'game-interface'; // Update active section
+
+            appendToRoundLog('تم العودة إلى اللعبة الرئيسية.');
+            saveGameState();
+        }
+
+
+        // --- Timer Functions ---
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes < 10 ? '0' : ''}${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+        }
+
+        function updateTimerDisplay() {
+            timerDisplay.textContent = formatTime(timeRemaining);
+            if (timeRemaining <= 0) {
+                pauseTimer();
+                appendToRoundLog('انتهى وقت المؤقت!');
+                // Optional: add a sound effect or visual alert for time up
+            }
+        }
+
+        function startTimer() {
+            if (isTimerRunning) return;
+            isTimerRunning = true;
+            appendToRoundLog('تم بدء المؤقت.');
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    isTimerRunning = false;
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            if (!isTimerRunning) return;
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            appendToRoundLog('تم إيقاف المؤقت مؤقتاً.');
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            const minutes = parseInt(timerMinutesInput.value);
+            const seconds = parseInt(timerSecondsInput.value);
+            timeRemaining = (isNaN(minutes) ? 0 : minutes * 60) + (isNaN(seconds) ? 0 : seconds);
+            updateTimerDisplay();
+            appendToRoundLog('تم إعادة تعيين المؤقت.');
+        }
+
+        // --- Instructions Page Functions ---
+        function showInstructions() {
+            // Hide all other sections
+            setupSection.classList.add('hidden');
+            characterAssignmentSection.classList.add('hidden');
+            gameInterface.classList.add('hidden');
+            playerJourneySection.classList.add('hidden');
+            
+            // Show instructions
+            instructionsPage.classList.remove('hidden');
+            currentActiveSection = 'instructions'; // Update active section
+        }
+
+        function hideInstructions() {
+            instructionsPage.classList.add('hidden');
+            // Restore the previously active section
+            switch (currentActiveSection) {
+                case 'setup':
+                    setupSection.classList.remove('hidden');
+                    break;
+                case 'character-assignment':
+                    characterAssignmentSection.classList.remove('hidden');
+                    break;
+                case 'game-interface':
+                    gameInterface.classList.remove('hidden');
+                    break;
+                case 'player-journey':
+                    playerJourneySection.classList.remove('hidden');
+                    break;
+                default:
+                    setupSection.classList.remove('hidden'); // Fallback to setup
+                    break;
+            }
+        }
+
+        // --- Event Listeners ---
+        startGameBtn.addEventListener('click', startGameSetup);
+        confirmCharactersBtn.addEventListener('click', confirmCharactersAndStartRound);
+        passTurnBtn.addEventListener('click', switchTurn);
+        startNewRoundBtn.addEventListener('click', startNewRoundWorkflow);
+        startPlayerJourneyBtn.addEventListener('click', startPlayerJourneyRound);
+
+        // Timer Event Listeners
+        startTimerBtn.addEventListener('click', startTimer);
+        pauseTimerBtn.addEventListener('click', pauseTimer);
+        resetTimerBtn.addEventListener('click', resetTimer);
+        timerMinutesInput.addEventListener('change', resetTimer);
+        timerSecondsInput.addEventListener('change', resetTimer);
+
+        // Winner buttons event listeners (main game)
+        winTeam1Btn.addEventListener('click', () => declareRoundWinner('team1'));
+        winTeam2Btn.addEventListener('click', () => declareRoundWinner('team2'));
+
+        // Bonus round winner buttons
+        revealCareerBtn.addEventListener('click', revealPlayerCareer);
+        revealPlayerNameBtn.addEventListener('click', revealBonusPlayerName);
+        winTeam1BonusRoundBtn.addEventListener('click', () => declareBonusRoundWinner('team1'));
+        winTeam2BonusRoundBtn.addEventListener('click', () => declareBonusRoundWinner('team2'));
+        returnToMainGameBtn.addEventListener('click', returnToMainGame);
+
+        // Instructions button event listeners
+        showInstructionsBtn.addEventListener('click', showInstructions);
+        hideInstructionsBtn.addEventListener('click', hideInstructions);
+
+
+        // Initial load and render
+        document.addEventListener('DOMContentLoaded', () => {
+            // Ensure timer inputs have default values
+            if (isNaN(parseInt(timerMinutesInput.value))) timerMinutesInput.value = 1;
+            if (isNaN(parseInt(timerSecondsInput.value))) timerSecondsInput.value = 0;
+            resetTimer(); // Initialize timer display
+
+            // Determine which section should be active on load
+            if (gameState.team1.name && gameState.team2.name) {
+                if (gameState.team1.secretCharacter && gameState.team2.secretCharacter && gameState.round > 0) {
+                     gameInterface.classList.remove('hidden');
+                     currentActiveSection = 'game-interface';
+                     // Re-populate round log from saved state
+                    gameState.currentRoundLog.forEach(entry => {
+                        const logEntry = document.createElement('p');
+                        logEntry.className = 'log-entry';
+                        logEntry.textContent = entry;
+                        roundLogDiv.prepend(logEntry);
+                    });
+                     currentRoundDisplay.textContent = gameState.round;
+                } else {
+                    characterAssignmentSection.classList.remove('hidden');
+                    currentActiveSection = 'character-assignment';
+                    renderCharacterPairs();
+                    assignTeam1Name.textContent = gameState.team1.name;
+                    assignTeam2Name.textContent = gameState.team2.name;
+                    // If characters were assigned but not confirmed, show them
+                    if (gameState.team1.secretCharacter) {
+                        assignedChar1.textContent = gameState.team1.secretCharacter.name;
+                        assignedChar2.textContent = gameState.team2.secretCharacter.name;
+                    }
+                }
+            } else {
+                setupSection.classList.remove('hidden');
+                currentActiveSection = 'setup';
+            }
+            renderScoreboard(); // Always render scoreboard on load
+            appendToRoundLog('أداة المضيف جاهزة! ابدأ بإعداد الفرق.');
+        });
+    </script>
+</body>
+</html>
+
